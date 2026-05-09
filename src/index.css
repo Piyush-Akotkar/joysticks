@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+
+  /* Space-separated H S% L% for Tailwind opacity modifiers */
+  --background: 240 11% 7%;      /* #0f0f12 - Deep dark blue-grey */
+  --foreground: 0 0% 100%;       /* White */
+
+  --card: 240 10% 10%;           /* Slightly lighter than bg */
+  --card-foreground: 0 0% 100%;
+
+  --popover: 240 10% 10%;
+  --popover-foreground: 0 0% 100%;
+
+  --primary: 208 100% 41%;       /* #0070d1 - PlayStation Blue */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 6% 15%;       /* Dark grey for secondary actions */
+  --secondary-foreground: 0 0% 90%;
+
+  --muted: 240 6% 15%;
+  --muted-foreground: 240 5% 65%;
+
+  --accent: 280 80% 60%;         /* Purple neon accent */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 240 6% 20%;
+  --input: 240 6% 20%;
+  --ring: 208 100% 41%;
+
+  --radius: 0.75rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-bold tracking-wide uppercase;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px hsla(var(--primary), 0.5), 0 0 20px hsla(var(--primary), 0.3);
+  }
+  
+  .border-glow {
+    box-shadow: 0 0 10px hsla(var(--primary), 0.3);
+  }
+
+  .glass-panel {
+    @apply bg-card/60 backdrop-blur-md border border-white/5;
+  }
+
+  .neon-border {
+    @apply border border-primary/50 shadow-[0_0_15px_rgba(0,112,209,0.3)];
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-primary/50 transition-colors;
+}
