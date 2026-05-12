@@ -47,7 +47,7 @@ export default function Book() {
                     <p className="text-sm text-gray-400">{selectedPackage.duration} Hours Session</p>
                   </div>
                   <div className="text-3xl font-display font-bold text-primary">
-                    ${selectedPackage.price}
+                    ₹{selectedPackage.price}
                   </div>
                 </div>
                 <div className="h-px bg-white/10 mb-4" />
