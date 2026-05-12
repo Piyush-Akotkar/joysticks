@@ -13,6 +13,7 @@ import { SplashScreen } from "./components/SplashScreen";
 import TermsConditions from "./pages/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RentalGuidelines from "./pages/RentalGuidelines";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 function Router() {
   return (
@@ -44,6 +45,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+        <ScrollToTop />
         <Router />
         <Toaster />
       </TooltipProvider>
