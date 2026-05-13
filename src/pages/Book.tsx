@@ -4,8 +4,13 @@ import { BookingForm } from "@/components/BookingForm";
 import { STATIC_PACKAGES, STATIC_GAMES } from "@/lib/static-data";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Book() {
+  useEffect(() => {
+    document.title = "Book | Joysticks Joy";
+  }, []);
+
   const params = new URLSearchParams(window.location.search);
   
   const initialPackageId = params.get("packageId") ? parseInt(params.get("packageId")!) : undefined;

@@ -5,8 +5,13 @@ import { Link } from "wouter";
 import { Check, Gamepad2, CalendarDays, ShieldCheck } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { STATIC_PACKAGES } from "@/lib/static-data";
+import { useEffect } from "react";
 
 export default function Packages() {
+  useEffect(() => {
+    document.title = "Packages | Joysticks Joy";
+  }, []);
+
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
       <Navigation />

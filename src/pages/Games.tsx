@@ -3,10 +3,14 @@ import { STATIC_GAMES } from "@/lib/static-data";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Gamepad, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Footer } from "@/components/Footer";
 
 export default function Games() {
+  useEffect(() => {
+    document.title = "Games | Joysticks Joy";
+  }, []);
+
   const games = STATIC_GAMES;
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");

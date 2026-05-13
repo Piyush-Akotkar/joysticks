@@ -1,8 +1,13 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 export default function TermsConditions() {
+  useEffect(() => {
+    document.title = "Terms & Conditions | Joysticks Joy";
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-24 md:pb-0">
       <Navigation />
