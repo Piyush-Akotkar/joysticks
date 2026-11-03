@@ -1,77 +1,127 @@
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronRight, Check } from "lucide-react";
+import { ArrowRight, ChevronRight, Check, Calendar, Clock } from "lucide-react";
 import { STATIC_PACKAGES, STATIC_GAMES } from "@/lib/static-data";
 import { Footer } from "@/components/Footer";
 
+// GTA VI Launch Date - November 19, 2026
+const GTA_VI_LAUNCH_DATE = new Date("2026-11-19T00:00:00");
+
+function getTimeLeft() {
+  const now = new Date();
+  const difference = GTA_VI_LAUNCH_DATE.getTime() - now.getTime();
+  
+  if (difference <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
+  }
+  
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / (1000 * 60)) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+    isExpired: false,
+  };
+}
+
 export default function Home() {
-  const packages = STATIC_PACKAGES;
+  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
+  const isPreBookingOpen = !timeLeft.isExpired;
+  
+  // Filter packages: pre-launch (ids 1-5) vs post-launch (ids 101-105)
+  const gtaPackages = isPreBookingOpen 
+    ? STATIC_PACKAGES.filter(p => p.id <= 5)
+    : STATIC_PACKAGES.filter(p => p.id > 100);
+  
+  const regularPackages = STATIC_PACKAGES.filter(p => p.id > 5 && p.id <= 100);
+  const packages = [...gtaPackages, ...regularPackages];
   const games = STATIC_GAMES;
 
   // Show only first 3 games/packages as preview
   const featuredPackages = packages.slice(0, 3);
   const featuredGames = games.slice(0, 4);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(getTimeLeft());
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-24 md:pb-0">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="relative h-[85vh] md:h-[80vh] flex items-center overflow-hidden">
-        {/* Abstract Background with Unsplash */}
+      {/* Hero Section - GTA 6 Banner */}
+      <section className="relative min-h-[85vh] md:min-h-[85vh] flex items-center overflow-hidden py-12 md:py-0">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent z-10" />
-          {/* Man playing video games dark moody */}
-          <img 
-            src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop" 
-            alt="Gaming Atmosphere" 
-            className="w-full h-full object-cover opacity-60"
+          <img
+            src="/banner-gta-6.webp"
+            alt="GTA VI Banner"
+            className="w-full h-full object-cover object-top opacity-80"
           />
         </div>
 
-        <div className="container mx-auto px-6 relative z-20">
-          <motion.div 
+        <div className="container mx-auto px-6 max-w-7xl relative z-20 w-full">
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-3xl"
+            className="max-w-3xl text-left"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-sm uppercase tracking-widest mb-6 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Next Gen Gaming is Here
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-sm uppercase tracking-widest mb-4 backdrop-blur-md">
+              <Calendar className="w-4 h-4" />
+              Pre-bookings Open
             </div>
-            
+
+            {!timeLeft.isExpired && (
+              <div className="flex flex-wrap items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 text-accent font-bold text-sm mb-6 backdrop-blur-md w-fit">
+                <Clock className="w-4 h-4" />
+                <span>Launching 19 Nov 2026 in:</span>
+                <span className="text-white">{timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s</span>
+              </div>
+            )}
+
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.9] text-white mb-6">
-              RENT THE <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400 text-glow">ULTIMATE</span> <br/>
-              EXPERIENCE
+              ENTER THE <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400 text-glow">WORLD OF</span> <br/>
+              VICE CITY
             </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-xl leading-relaxed">
-              Get a PS5 console delivered to your doorstep. Comes with 2 controllers and your choice of top-tier games.
+
+            <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-xl leading-relaxed">
+              The wait is almost over. Your next gaming adventure starts here.
             </p>
-            
+
+            <p className="text-lg text-gray-400 mb-10 max-w-xl">
+              GTA VI is coming to Joysticks Joy! Experience the next generation of open-world gaming on PS5.
+            </p>
+
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/book">
-                <Button className="h-14 px-8 text-lg font-bold rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_30px_rgba(0,112,209,0.4)] hover:shadow-[0_0_40px_rgba(0,112,209,0.6)] hover:-translate-y-1 transition-all duration-300">
-                  RENT NOW <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
               <Link href="/packages">
-                <Button variant="outline" className="h-14 px-8 text-lg font-bold rounded-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
-                  VIEW PACKAGES
+                <Button className="h-14 px-8 text-lg font-bold rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_30px_rgba(0,112,209,0.4)] hover:shadow-[0_0_40px_rgba(0,112,209,0.6)] hover:-translate-y-1 transition-all duration-300">
+                  Explore GTA VI Packages <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
+              {isPreBookingOpen && (
+                <Link href="/book">
+                  <Button variant="outline" className="h-14 px-8 text-lg font-bold rounded-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all">
+                    PRE-BOOK NOW
+                  </Button>
+                </Link>
+              )}
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Featured Packages */}
-      <section className="py-20 container mx-auto px-6">
+      <section className="py-20 max-w-7xl container mx-auto px-6">
         <div className="flex items-center justify-between mb-12">
           <h2 className="text-3xl md:text-5xl font-display font-bold">
             POPULAR <span className="text-primary">PLANS</span>
@@ -195,10 +245,10 @@ export default function Home() {
       </section>
 
       {/* Featured Games */}
-      <section className="py-20 bg-white/2">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl md:text-5xl font-display font-bold">TOP <span className="text-accent">GAMES</span></h2>
+      <section className="py-20 bg-white/2 ">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="flex items-center justify-between mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-5xl font-display font-bold">TOP <span className="text-accent">GAMES</span></h2>
             <Link href="/games" className="hidden md:flex items-center text-muted-foreground hover:text-white transition-colors">
               View All <ChevronRight className="w-5 h-5" />
             </Link>

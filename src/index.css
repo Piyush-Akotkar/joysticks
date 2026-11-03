@@ -8,34 +8,34 @@
   --font-display: 'Orbitron', sans-serif;
   --font-body: 'Rajdhani', sans-serif;
 
-  /* Space-separated H S% L% for Tailwind opacity modifiers */
-  --background: 240 11% 7%;      /* #0f0f12 - Deep dark blue-grey */
+  /* GTA VI - Vice City Theme: Pink sunsets, neon teals, palm tree vibes */
+  --background: 260 30% 8%;      /* Deep purple-black like Vice City nights */
   --foreground: 0 0% 100%;       /* White */
 
-  --card: 240 10% 10%;           /* Slightly lighter than bg */
+  --card: 260 25% 12%;           /* Dark purple card */
   --card-foreground: 0 0% 100%;
 
-  --popover: 240 10% 10%;
+  --popover: 260 25% 12%;
   --popover-foreground: 0 0% 100%;
 
-  --primary: 208 100% 41%;       /* #0070d1 - PlayStation Blue */
+  --primary: 330 100% 55%;       /* #ff2d95 - Hot pink neon (GTA VI signature) */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 240 6% 15%;       /* Dark grey for secondary actions */
+  --secondary: 260 20% 18%;      /* Dark grey-purple */
   --secondary-foreground: 0 0% 90%;
 
-  --muted: 240 6% 15%;
-  --muted-foreground: 240 5% 65%;
+  --muted: 260 20% 18%;
+  --muted-foreground: 260 15% 65%;
 
-  --accent: 280 80% 60%;         /* Purple neon accent */
-  --accent-foreground: 0 0% 100%;
+  --accent: 175 100% 45%;        /* #00e5cc - Neon teal */
+  --accent-foreground: 260 30% 8%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 240 6% 20%;
-  --input: 240 6% 20%;
-  --ring: 208 100% 41%;
+  --border: 260 20% 25%;
+  --input: 260 20% 25%;
+  --ring: 330 100% 55%;          /* Pink ring to match primary */
 
   --radius: 0.75rem;
 }
@@ -54,11 +54,19 @@
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 10px hsla(var(--primary), 0.5), 0 0 20px hsla(var(--primary), 0.3);
+    text-shadow: 0 0 10px hsla(var(--primary), 0.7), 0 0 20px hsla(var(--primary), 0.5), 0 0 40px hsla(var(--primary), 0.3);
+  }
+  
+  .text-glow-teal {
+    text-shadow: 0 0 10px hsla(var(--accent), 0.7), 0 0 20px hsla(var(--accent), 0.5), 0 0 40px hsla(var(--accent), 0.3);
   }
   
   .border-glow {
-    box-shadow: 0 0 10px hsla(var(--primary), 0.3);
+    box-shadow: 0 0 10px hsla(var(--primary), 0.4);
+  }
+
+  .border-glow-teal {
+    box-shadow: 0 0 10px hsla(var(--accent), 0.4);
   }
 
   .glass-panel {
@@ -66,7 +74,11 @@
   }
 
   .neon-border {
-    @apply border border-primary/50 shadow-[0_0_15px_rgba(0,112,209,0.3)];
+    @apply border border-primary/50 shadow-[0_0_15px_rgba(255,45,149,0.3)];
+  }
+
+  .neon-border-teal {
+    @apply border border-accent/50 shadow-[0_0_15px_rgba(0,229,204,0.3)];
   }
 }
 

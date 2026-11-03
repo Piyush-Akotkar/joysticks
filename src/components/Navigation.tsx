@@ -14,6 +14,21 @@ export function Navigation() {
 
   return (
     <>
+      {/* Mobile Header */}
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-lg border-b border-white/5">
+        <div className="flex items-center justify-between px-4 h-14">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/jsj-ps.png" alt="Controller Logo" className="w-8 h-8 object-contain" />
+            <img src="/jsj-logo.png" alt="Joysticks Joy" className="h-6 w-auto object-contain" />
+          </Link>
+          <Link href="/book">
+            <button className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-full">
+              Book Now
+            </button>
+          </Link>
+        </div>
+      </header>
+
       {/* Desktop Header */}
       <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -99,7 +114,7 @@ export function Navigation() {
       
       {/* Spacer for fixed header/footer */}
       <div className="hidden md:block h-20" />
-      <div className="md:hidden h-4" /> 
+      <div className="md:hidden h-14" /> 
     </>
   );
 }
