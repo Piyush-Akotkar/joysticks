@@ -36,6 +36,14 @@ interface InsertBooking {
   preferredDate?: Date;
 }
 
+// GTA VI game id
+const GTA6_GAME_ID = 0;
+
+// Packages whose name includes "GTA VI" are GTA 6 packages
+function isGta6Package(pkg: { name: string } | undefined): boolean {
+  return !!pkg && pkg.name.includes("GTA VI");
+}
+
 export function BookingForm({
   packageId,
   gameIds = [],
@@ -43,13 +51,25 @@ export function BookingForm({
 }: BookingFormProps) {
   const { toast } = useToast();
   const [redirecting, setRedirecting] = useState(false);
-  const [selectedGames, setSelectedGames] = useState<number[]>(gameIds);
 
   const selectedPackage = STATIC_PACKAGES.find((p) => p.id === packageId);
+  const isGta6 = isGta6Package(selectedPackage);
+
+  // For GTA 6 packages: always pre-include GTA VI; for others: exclude it from initial selection
+  const initialGames = isGta6
+    ? Array.from(new Set([GTA6_GAME_ID, ...gameIds]))
+    : gameIds.filter((id) => id !== GTA6_GAME_ID);
+
+  const [selectedGames, setSelectedGames] = useState<number[]>(initialGames);
 
   const maxGames = selectedPackage?.maxGamesAllowed || 0;
 
   const canAddMoreGames = selectedGames.length < maxGames;
+
+  // Games available for selection depending on package type
+  const availableGames = isGta6
+    ? STATIC_GAMES
+    : STATIC_GAMES.filter((g) => g.id !== GTA6_GAME_ID);
 
   const form = useForm<InsertBooking>({
     defaultValues: {
@@ -72,6 +92,9 @@ export function BookingForm({
   }, [maxGames]);
 
   function toggleGame(gameId: number) {
+    // GTA VI is locked for GTA 6 packages — cannot be deselected
+    if (isGta6 && gameId === GTA6_GAME_ID) return;
+
     setSelectedGames((prev) => {
       if (prev.includes(gameId)) {
         return prev.filter((id) => id !== gameId);
@@ -289,9 +312,10 @@ export function BookingForm({
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto pr-2">
-              {STATIC_GAMES.map((game) => {
+              {availableGames.map((game) => {
                 const isSelected = selectedGames.includes(game.id);
-                const isDisabled = !isSelected && !canAddMoreGames;
+                const isLocked = isGta6 && game.id === GTA6_GAME_ID;
+                const isDisabled = (!isSelected && !canAddMoreGames) || isLocked;
 
                 return (
                   <button
@@ -304,7 +328,8 @@ export function BookingForm({
                       isSelected
                         ? "border-primary ring-2 ring-primary shadow-[0_0_20px_rgba(0,112,209,0.35)] scale-[1.02]"
                         : "border-white/10 hover:border-primary/40",
-                      isDisabled && "opacity-40 cursor-not-allowed"
+                      !isLocked && isDisabled && "opacity-40 cursor-not-allowed",
+                      isLocked && "cursor-default"
                     )}
                   >
                     {/* Game Image */}
@@ -317,7 +342,7 @@ export function BookingForm({
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
 
-                      {/* Checkbox */}
+                      {/* Checkbox / Lock */}
                       <div
                         className={cn(
                           "absolute top-3 right-3 w-7 h-7 rounded-full border flex items-center justify-center backdrop-blur-md transition-all",
@@ -326,9 +351,13 @@ export function BookingForm({
                             : "bg-black/40 border-white/30"
                         )}
                       >
-                        {isSelected && (
+                        {isLocked ? (
+                          <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                          </svg>
+                        ) : isSelected ? (
                           <Check className="w-4 h-4 text-white" />
-                        )}
+                        ) : null}
                       </div>
 
                       {/* Availability Badge */}
@@ -336,6 +365,15 @@ export function BookingForm({
                         <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                           <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/30">
                             Unavailable
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Locked badge for GTA VI */}
+                      {isLocked && (
+                        <div className="absolute bottom-12 left-3">
+                          <span className="px-2 py-0.5 rounded-full bg-primary/30 text-primary text-[9px] font-bold border border-primary/40 uppercase tracking-wider">
+                            Included
                           </span>
                         </div>
                       )}
@@ -361,18 +399,31 @@ export function BookingForm({
                 {selectedGames.map((gameId) => {
                   const game = STATIC_GAMES.find((g) => g.id === gameId);
                   if (!game) return null;
+                  const isLockedPill = isGta6 && gameId === GTA6_GAME_ID;
 
                   return (
                     <button
                       key={gameId}
                       type="button"
-                      onClick={() => toggleGame(gameId)}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/30 hover:bg-primary/25 transition-colors"
+                      onClick={() => !isLockedPill && toggleGame(gameId)}
+                      disabled={isLockedPill}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors",
+                        isLockedPill
+                          ? "bg-primary/25 border-primary/50 cursor-default"
+                          : "bg-primary/15 border-primary/30 hover:bg-primary/25"
+                      )}
                     >
                       <span className="text-xs font-medium text-white">
                         {game.title}
                       </span>
-                      <span className="text-primary font-bold">×</span>
+                      {isLockedPill ? (
+                        <svg className="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <span className="text-primary font-bold">×</span>
+                      )}
                     </button>
                   );
                 })}
